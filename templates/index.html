@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Groupie Tracker</title>
+</head>
+
+<body>
+    <h1>Groupie-Tracker</h1>
+    <form action="/search" method="get">
+        <input list="searchs" name="search" id="search">
+        <datalist id="searchs">
+            {{range .SearchResults}}
+            <option value="{{.Value}} - {{.Type}}">
+            {{end}}
+        </datalist>
+        <input type="submit">
+    </form>
+    <div class="container">
+        {{range .Artists}}
+        <div class="card">
+            <a href="informations/{{.Id}}"><img src="{{.Image}}" alt="{{.Name}}"></a>
+            {{.Name}}
+        </div>
+        {{end}}
+    </div>
+</body>
+<!-- <body>
+    <h1>Groupie-Tracker</h1>
+    <form action="/search" method="get">
+         <label for="search">Choose your browser from the list:</label>
+        <input list="searchs" name="search" id="search">
+        <datalist id="searchs">
+            {{range .}}
+            <option value="{{.Name}}">
+                {{end}}
+                {{range .}}
+            <option value="{{.FirstAlbum}}">
+                {{end}}
+                {{range .}}
+            <option value="{{.CreationDate}}">
+                {{end}}
+        </datalist>
+        <input type="submit">
+    </form>
+    <div class="container">
+        {{range .}}
+
+        <div class="card">
+            <a href="informations/{{.Id}}"><img src="{{.Image}}" alt="{{.Name}}"></a>
+             <div> 
+            {{.Name}}
+            </div>
+        </div>
+        {{end}}
+    </div>
+</body> -->
+<style>
+    .container {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 5px;
+        border: solid purple 1px;
+        border-radius: 10px;
+        background-color: cadetblue;
+    }
+
+    img {
+        border-radius: 10px;
+    }
+
+    button {
+        background: none;
+        border: none;
+        padding: 0;
+    }
+
+    button:hover {
+        cursor: pointer;
+        border-radius: 10px;
+    }
+
+    h1 {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+</style>
+
+</html>
