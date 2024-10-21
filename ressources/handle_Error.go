@@ -11,7 +11,6 @@ func HandleError(w http.ResponseWriter, StatusCodes int) {
 		400: "templates/400.html",
 		404: "templates/404.html",
 		500: "templates/500.html",
-		405: "templates/405.html",
 	}
 	tmplName := templates[StatusCodes]
 	tmpl, err := template.ParseFiles(tmplName)

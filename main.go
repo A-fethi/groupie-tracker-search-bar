@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	groupie "groupie/ressources"
@@ -14,7 +15,7 @@ func main() {
 	fmt.Println("Starting server on http://localhost:8080")
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
-		fmt.Printf("Error: Unable to start server on port 8080: %v\n", err)
+		log.Printf("Server failed to start: %v", err)
 		return
 	}
 }

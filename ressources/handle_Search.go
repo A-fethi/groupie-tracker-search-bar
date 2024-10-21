@@ -1,23 +1,19 @@
 package groupie
 
 import (
+	"bytes"
 	"html/template"
 	"net/http"
 	"strconv"
 	"strings"
 )
 
-type SearchResult struct {
-	Value string
-	Type  string
-}
-
+// HandleSearch processes search requests and filters artists based on user input (search term).
 func HandleSearch(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		HandleError(w, http.StatusMethodNotAllowed)
 		return
 	}
-
 	var artists []Artists
 
 	err := fetch("https://groupietrackers.herokuapp.com/api/", "artists", &artists)
@@ -25,42 +21,87 @@ func HandleSearch(w http.ResponseWriter, r *http.Request) {
 		HandleError(w, http.StatusInternalServerError)
 		return
 	}
+	var dates Dates2
+	if err := fetch("https://groupietrackers.herokuapp.com/api/", "dates", &dates); err != nil {
+		HandleError(w, http.StatusInternalServerError)
+		return
+	}
+	var locations Locations2
+	if err := fetch("https://groupietrackers.herokuapp.com/api/", "locations", &locations); err != nil {
 
-	var searchResults []SearchResult
+		HandleError(w, http.StatusInternalServerError)
+		return
+	}
+
+	var filteredArtists []Artists
+
 	search := r.FormValue("search")
-
+	search = strings.TrimSpace(search)
+	if search == "" {
+		http.Error(w, "No search term provided", http.StatusBadRequest)
+		return
+	}
 	for _, artist := range artists {
+		isFound := false
 		if strings.Contains(strings.ToLower(artist.Name), strings.ToLower(search)) {
-			searchResults = append(searchResults, SearchResult{Value: artist.Name, Type: "artist/band"})
+			isFound = true
 		}
-		if strings.Contains(strings.ToLower(strconv.Itoa(artist.CreationDate)), strings.ToLower(search)) {
-			searchResults = append(searchResults, SearchResult{Value: strconv.Itoa(artist.CreationDate), Type: "creation date"})
+
+		if strconv.Itoa(artist.CreationDate) == search {
+			isFound = true
 		}
-		if strings.Contains(strings.ToLower(artist.FirstAlbum), strings.ToLower(search)) {
-			searchResults = append(searchResults, SearchResult{Value: artist.FirstAlbum, Type: "first album"})
+
+		if strings.Contains(artist.FirstAlbum, search) {
+			isFound = true
 		}
-		for _, member := range artist.Members {
-			if strings.Contains(strings.ToLower(member), strings.ToLower(search)) {
-				searchResults = append(searchResults, SearchResult{Value: member, Type: "member"})
+
+		for i := 0; i < len(artist.Members); i++ {
+			if strings.Contains(strings.ToLower(artist.Members[i]), strings.ToLower(search)) {
+				isFound = true
 			}
+		}
+
+		for _, location := range locations.Index {
+			if location.Id == artist.Id {
+				for _, locat := range location.Locations {
+					if strings.Contains(strings.ToLower(locat), strings.ToLower(search)) {
+						isFound = true
+					}
+				}
+			}
+		}
+
+		for _, date := range dates.Index {
+			if date.Id == artist.Id {
+				for _, dat := range date.Dates {
+					if strings.Contains(dat, search) {
+						isFound = true
+					}
+				}
+			}
+		}
+		if isFound {
+			filteredArtists = append(filteredArtists, artist)
 		}
 	}
 
+	if len(filteredArtists) == 0 {
+		HandleError(w, http.StatusNotFound)
+		return
+	}
 	tmpl, err := template.ParseFiles("templates/search.html")
 	if err != nil {
 		HandleError(w, http.StatusInternalServerError)
 		return
 	}
 
-	data := struct {
-		Artists       []Artists
-		SearchResults []SearchResult
-	}{
-		Artists:       artists,
-		SearchResults: searchResults,
+	var buf bytes.Buffer
+	err = tmpl.Execute(&buf, filteredArtists)
+	if err != nil {
+		HandleError(w, http.StatusInternalServerError)
+		return
 	}
-
-	err = tmpl.Execute(w, data)
+	_, err = w.Write(buf.Bytes())
 	if err != nil {
 		HandleError(w, http.StatusInternalServerError)
 		return

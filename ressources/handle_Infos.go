@@ -25,11 +25,6 @@ func HandleInfos(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if artist.Id == 0 {
-		HandleError(w, http.StatusNotFound)
-		return
-	}
-
 	if err := fetch("https://groupietrackers.herokuapp.com/api/", "locations/"+id, &locations); err != nil {
 		HandleError(w, http.StatusInternalServerError)
 		return
@@ -48,6 +43,11 @@ func HandleInfos(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := template.ParseFiles("templates/infos.html")
 	if err != nil {
 		HandleError(w, http.StatusInternalServerError)
+		return
+	}
+
+	if artist.Id == 0 {
+		HandleError(w, http.StatusNotFound)
 		return
 	}
 

@@ -4,60 +4,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Groupie Tracker</title>
 </head>
-
 <body>
     <h1>Groupie-Tracker</h1>
     <form action="/search" method="get">
-        <input list="searchs" name="search" id="search">
-        <datalist id="searchs">
-            {{range .SearchResults}}
-            <option value="{{.Value}} - {{.Type}}">
+        <label for="search">Search:</label>
+        <input type="search" list="search2" id="search" name="search" autocomplete="off">
+        <datalist id="search2">
+            {{range .Artists}}
+            <option value="{{.Name}}">artist/band</option>
+            <option value="{{.CreationDate}}">CreationDate</option>
+            <option value="{{.FirstAlbum}}">FirstAlbum</option>
+            {{range .Members}}
+            <option value="{{.}}">Member</option>
+            {{end}}
+
+            {{end}}
+
+            {{range .OptionsLocations}}
+            <option value="{{.}}">location</option>
+            {{end}}
+            {{range .OptionsDates}}
+            <option value="{{.}}">Date</option>
             {{end}}
         </datalist>
-        <input type="submit">
+        <input type="submit" value="search">
     </form>
     <div class="container">
         {{range .Artists}}
+
         <div class="card">
-            <a href="informations/{{.Id}}"><img src="{{.Image}}" alt="{{.Name}}"></a>
-            {{.Name}}
+            <div>
+
+                <a href="informations/{{.Id}}"><img src="{{.Image}}" alt="{{.Name}}"></a>
+
+            </div>
+            <div>
+                {{.Name}}
+            </div>
+            </form>
         </div>
         {{end}}
     </div>
 </body>
-<!-- <body>
-    <h1>Groupie-Tracker</h1>
-    <form action="/search" method="get">
-         <label for="search">Choose your browser from the list:</label>
-        <input list="searchs" name="search" id="search">
-        <datalist id="searchs">
-            {{range .}}
-            <option value="{{.Name}}">
-                {{end}}
-                {{range .}}
-            <option value="{{.FirstAlbum}}">
-                {{end}}
-                {{range .}}
-            <option value="{{.CreationDate}}">
-                {{end}}
-        </datalist>
-        <input type="submit">
-    </form>
-    <div class="container">
-        {{range .}}
-
-        <div class="card">
-            <a href="informations/{{.Id}}"><img src="{{.Image}}" alt="{{.Name}}"></a>
-             <div> 
-            {{.Name}}
-            </div>
-        </div>
-        {{end}}
-    </div>
-</body> -->
 <style>
+    h1 {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
     .container {
         display: flex;
         flex-direction: row;
@@ -90,10 +88,44 @@
         border-radius: 10px;
     }
 
-    h1 {
+    form {
+        margin: 20px;
         display: flex;
-        flex-direction: column;
         align-items: center;
+    }
+
+    label {
+        margin-right: 10px;
+        font-weight: bold;
+    }
+
+    input[type="search"] {
+        padding: 2px;
+        border: 2px solid #333;
+        border-radius: 5px;
+        outline: none;
+        font-size: 16px;
+        margin-right: 10px;
+        transition: 0.3s;
+    }
+
+    input[type="search"]:focus {
+        border-color: #007BFF;
+    }
+
+    input[type="submit"] {
+        padding: 5px 20px;
+        border: 2px solid #333;
+        background-color: #007BFF;
+        color: white;
+        cursor: pointer;
+        border-radius: 5px;
+        font-size: 16px;
+        transition: 0.3s;
+    }
+
+    input[type="submit"]:hover {
+        background-color: #0056b3;
     }
 </style>
 

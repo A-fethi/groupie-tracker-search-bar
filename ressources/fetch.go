@@ -5,6 +5,7 @@ import (
 	"net/http"
 )
 
+
 // fetch retrieves JSON data from a specified API endpoint and decodes it into the provided data structure.
 func fetch(url string, endpoint string, data interface{}) error {
 	res, err := http.Get(url + endpoint)

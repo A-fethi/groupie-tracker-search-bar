@@ -4,10 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Artists Informations</title>
 </head>
-
 <body>
+    <div class="button">
+        <a href="/">
+            <button>Home</button>
+        </a>
+    </div>
     <h1>{{.artist.Name}}</h1>
     <img src="{{.artist.Image}}" alt="{{.artist.Name}}">
     <h2>ID</h2>
@@ -49,5 +54,31 @@
         {{end}}
     </ul>
 </body>
+<style>
+     button {
+        background: none;
+        border: none;
+        padding: 0;
+    }
+
+    button:hover {
+        cursor: pointer;
+        border-radius: 10px;
+    }
+    
+    .button {
+        display: flex;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: medium;
+        border-radius: 10px;
+        border-color: black;
+        border-style: groove;
+        margin: auto;
+        padding: 10px;
+        width: 100px;
+        justify-content: center;
+        background-color: aquamarine;
+    }
+</style>
 
 </html>
